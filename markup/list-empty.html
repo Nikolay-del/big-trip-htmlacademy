@@ -2,40 +2,44 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
 
     <title>Big Trip</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link href="css/style.css" rel="stylesheet">
   </head>
 
   <body class="page-body">
     <header class="page-header">
       <div class="page-body__container  page-header__container">
-        <img class="page-header__logo" src="img/logo.png" width="42" height="42" alt="Trip logo">
+        <img alt="Trip logo" class="page-header__logo" height="42" src="img/logo.png" width="42">
 
         <div class="trip-main">
           <div class="trip-main__trip-controls  trip-controls">
             <div class="trip-controls__filters">
               <h2 class="visually-hidden">Filter events</h2>
-              <form class="trip-filters" action="#" method="get">
+              <form action="#" class="trip-filters" method="get">
                 <div class="trip-filters__filter">
-                  <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything" checked>
+                  <input checked class="trip-filters__filter-input  visually-hidden" id="filter-everything"
+                         name="trip-filter" type="radio" value="everything">
                   <label class="trip-filters__filter-label" for="filter-everything">Everything</label>
                 </div>
 
                 <div class="trip-filters__filter">
-                  <input id="filter-future" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="future" disabled>
+                  <input class="trip-filters__filter-input  visually-hidden" disabled id="filter-future"
+                         name="trip-filter" type="radio" value="future">
                   <label class="trip-filters__filter-label" for="filter-future">Future</label>
                 </div>
 
                 <div class="trip-filters__filter">
-                  <input id="filter-present" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="present">
+                  <input class="trip-filters__filter-input  visually-hidden" id="filter-present" name="trip-filter"
+                         type="radio" value="present">
                   <label class="trip-filters__filter-label" for="filter-present">Present</label>
                 </div>
 
                 <div class="trip-filters__filter">
-                  <input id="filter-past" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="past" disabled>
+                  <input class="trip-filters__filter-input  visually-hidden" disabled id="filter-past"
+                         name="trip-filter" type="radio" value="past">
                   <label class="trip-filters__filter-label" for="filter-past">Past</label>
                 </div>
 
