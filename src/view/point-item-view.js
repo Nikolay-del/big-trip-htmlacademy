@@ -1,13 +1,12 @@
 import { createElement } from '../render';
-import { formatDateToMonthDay, formatDateToTime, formatDurationDifference } from '../utils';
-import { getPointOffers } from '../mock/offer';
+import {formatDateForDatetime, formatDateToMonthDay, formatDateToTime, formatDurationDifference} from '../utils';
 
 function createOffersList(offers) {
   if (offers.length === 0) {
     return '';
   }
 
-  const offersMarkup = getPointOffers(offers)
+  const offersMarkup = offers
     .map(({title, price}) => `<li class="event__offer">
          <span class="event__offer-title">${title}</span>
          &plus;&euro;&nbsp;
@@ -25,16 +24,16 @@ function createPointItemTemplate({type, basePrice, dateFrom, dateTo, isFavorite,
     `
     <li class="trip-events__item">
               <div class="event">
-                <time class="event__date" datetime="2019-03-18">${formatDateToMonthDay(dateFrom)}</time>
+                <time class="event__date" datetime="${formatDateForDatetime(dateFrom, false)}">${formatDateToMonthDay(dateFrom)}</time>
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>
                 <h3 class="event__title">${type} Amsterdam</h3>
                 <div class="event__schedule">
                   <p class="event__time">
-                    <time class="event__start-time" datetime="2019-03-18T10:30">${formatDateToTime(dateFrom)}</time>
+                    <time class="event__start-time" datetime="${formatDateForDatetime(dateFrom)}">${formatDateToTime(dateFrom)}</time>
                     &mdash;
-                    <time class="event__end-time" datetime="2019-03-18T11:00">${formatDateToTime(dateTo)}</time>
+                    <time class="event__end-time" datetime="${formatDateForDatetime(dateTo)}">${formatDateToTime(dateTo)}</time>
                   </p>
                   <p class="event__duration">${formatDurationDifference(dateFrom, dateTo)}</p>
                 </div>

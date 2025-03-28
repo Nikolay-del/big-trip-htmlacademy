@@ -1,16 +1,19 @@
-import { EVENT_TYPES } from '../const';
+import {getRandomInteger} from '../utils';
+import {Price} from './const';
+import {getRandomDate} from './utils';
 
-const mockPoints = [
-  {
-    id: '1',
-    basePrice: 1100,
-    dateFrom: new Date('2025-02-28T12:30'),
-    dateTo: new Date('2025-02-28T14:30'),
-    destination: '',
-    offers: ['1', '2'],
-    isFavorite: true,
-    type: EVENT_TYPES[1]
-  }
-];
 
-export { mockPoints };
+function generatePoint(type, destinationId, offersId) {
+  return {
+    id: crypto.randomUUID(),
+    basePrice: getRandomInteger(Price.MIN, Price.MAX),
+    dateFrom: getRandomDate({next: false}),
+    dateTo: getRandomDate({next: true}),
+    destination: destinationId,
+    offers: offersId,
+    isFavorite: getRandomInteger(0, 1),
+    type: type
+  };
+}
+
+export {generatePoint};

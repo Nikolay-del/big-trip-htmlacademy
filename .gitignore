@@ -6,6 +6,7 @@ Thumbs.db
 ../2457807-big-trip-23/.idea
 *.sublime*
 .vscode
+.idea
 
 # Вспомогательные файлы
 *.log*
