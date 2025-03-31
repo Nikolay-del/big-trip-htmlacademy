@@ -1,14 +1,18 @@
-export default class OfferModel {
+import AbstractModel from './abstract-model';
+
+export default class OfferModel extends AbstractModel {
+  #offers = null;
+
   constructor(service) {
-    this.service = service;
-    this.offers = service.getOffers();
+    super(service);
+    this.#offers = this._service.offers;
   }
 
-  getAllOffers() {
-    return this.offers;
+  get offers() {
+    return this.#offers;
   }
 
   getOfferByType(type) {
-    return this.offers.find((offer) => offer.type === type).offers;
+    return this.#offers.find((offer) => offer.type === type).offers;
   }
 }

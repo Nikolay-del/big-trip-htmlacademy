@@ -1,5 +1,5 @@
-import {createElement} from '../render';
 import {EVENT_TYPES} from '../mock/const';
+import AbstractView from '../framework/view/abstract-view';
 
 function createOffersList(type, offers) {
   const foundOffers = offers.find((offer) => offer.type === type);
@@ -141,11 +141,8 @@ function createEventDetails({offersListMarkup, destinationInfoMarkup}) {
 }
 
 function createPointFormTemplate({type, destination, basePrice, dateFrom, dateTo}, isEditMode, destinations, offers) {
-  const destinationData = destination ? destinations.find((dest) => dest.id === destination) : '';
-
   const offersListMarkup = createOffersList(type, offers);
-  const destinationInfoMarkup = createDestinationInfo(destinationData);
-
+  const destinationInfoMarkup = createDestinationInfo(destination);
   return (`
 <li class="trip-events__item">
               <form action="#" class="event event--edit" method="post">
@@ -165,7 +162,7 @@ function createPointFormTemplate({type, destination, basePrice, dateFrom, dateTo
                       ${type}
                     </label>
                     <input class="event__input  event__input--destination" id="event-destination-1" list="destination-list-1"
-                           name="event-destination" type="text" value="${destinationData.name ?? ''}">
+                           name="event-destination" type="text" value="${destination.name ?? ''}">
                     ${createDestinationList(destinations)}
                   </div>
 
@@ -174,6 +171,11 @@ function createPointFormTemplate({type, destination, basePrice, dateFrom, dateTo
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
                   ${isEditMode ? '<button class="event__reset-btn" type="reset">Delete</button>' : '<button class="event__reset-btn" type="reset">Cancel</button>'}
+                  ${isEditMode ? `
+                    <button class="event__rollup-btn" type="button">
+                        <span class="visually-hidden">Close event</span>
+                    </button>
+                    ` : ''}
                 </header>
                 ${createEventDetails({offersListMarkup, destinationInfoMarkup})}
               </form>
@@ -181,33 +183,45 @@ function createPointFormTemplate({type, destination, basePrice, dateFrom, dateTo
     `);
 }
 
-export default class PointFormView {
-  constructor(isEditMode = false, {point = {}, destinations, offers} = {}) {
-    this.destinations = destinations;
-    this.offers = offers;
-    this.isEditMode = isEditMode;
-    this.data = {
+export default class PointFormView extends AbstractView {
+  #destinations = null;
+  #offers = null;
+  #isEditMode = false;
+  #data = null;
+  #handlerCloseClick = null;
+  #handlerSaveClick = null;
+
+  constructor({isEditMode, point = {}, destinations, offers, onCloseClick, onSaveClick}) {
+    super();
+
+    this.#destinations = destinations;
+    this.#offers = offers;
+    this.#isEditMode = isEditMode;
+    this.#data = {
       type: point.type || EVENT_TYPES[0],
       basePrice: point.basePrice || '',
       dateFrom: point.dateFrom || '',
       dateTo: point.dateTo || '',
       destination: point.destination || null,
     };
+    this.#handlerCloseClick = onCloseClick;
+    this.#handlerSaveClick = onSaveClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#cancelClickHandler);
+    this.element.querySelector('.event').addEventListener('submit', this.#saveClickHandler);
   }
 
-  getTemplate() {
-    return createPointFormTemplate(this.data, false, this.destinations, this.offers);
+  get template() {
+    return createPointFormTemplate(this.#data, this.#isEditMode, this.#destinations, this.#offers);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #cancelClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handlerCloseClick();
+  };
 
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #saveClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handlerSaveClick();
+  };
 }

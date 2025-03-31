@@ -1,53 +1,95 @@
 import ListView from '../view/list-view';
-import {render} from '../render';
+import {render, replace} from '../framework/render';
 import SortView from '../view/sort-view';
 import EventsView from '../view/events-view';
 import PointItemView from '../view/point-item-view';
 import PointFormView from '../view/point-form-view';
 
 export default class EventsPresenter {
-  eventsComponent = new EventsView();
-  listComponent = new ListView();
+  #eventsComponent = new EventsView();
+  #listComponent = new ListView();
+
+  #eventsContainer = null;
+  #pointModel = null;
+  #destinationModel = null;
+  #offerModel = null;
+
+  #events = null;
+  #destinations = null;
+  #offers = null;
 
 
   constructor({eventsContainer, pointModel, destinationModel, offerModel}) {
-    this.eventsContainer = eventsContainer;
-    this.pointModel = pointModel;
-    this.destinationModel = destinationModel;
-    this.offerModel = offerModel;
+    this.#eventsContainer = eventsContainer;
+    this.#pointModel = pointModel;
+    this.#destinationModel = destinationModel;
+    this.#offerModel = offerModel;
   }
 
   init() {
-    this.eventsData = [...this.pointModel.getPoints()];
-    this.destinations = [...this.destinationModel.getAllDestinations()];
-    this.offers = [...this.offerModel.getAllOffers()];
+    this.#events = [...this.#pointModel.points];
+    this.#destinations = [...this.#destinationModel.destinations];
+    this.#offers = [...this.#offerModel.offers];
 
-    render(this.eventsComponent, this.eventsContainer);
-    render(new SortView(), this.eventsComponent.getElement());
-    render(this.listComponent, this.eventsComponent.getElement());
-    render(new PointFormView(false, {
-      point: {},
-      destinations: this.destinations,
-      offers: this.offers
-    }), this.listComponent.getElement());
+    render(this.#eventsComponent, this.#eventsContainer);
+    render(new SortView(), this.#eventsComponent.element);
+    render(this.#listComponent, this.#eventsComponent.element);
 
-    render(new PointFormView(true, {
-      point: this.eventsData[0],
-      destinations: this.destinations,
-      offers: this.offers
-    }), this.listComponent.getElement());
-
-    this.eventsData.forEach((value) => {
-      const type = value.type;
-
-      const offersType = this.offerModel.getOfferByType(type);
-      const updatedOffers = value.offers.map((offer) => offersType.find((of) => of.id === offer));
-      const updatedPoint = {
-        ...value,
-        offers: updatedOffers,
-      };
-
-      render(new PointItemView({point: updatedPoint}), this.listComponent.getElement());
+    this.#events.forEach((value) => {
+      this.#renderPoint(value);
     });
+  }
+
+  #renderPoint(point) {
+    const escKeyDownHandler = (evt) => {
+      if (evt.key === 'Escape') {
+        replaceEditPointToDefault();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }
+    };
+
+
+    const type = point.type;
+
+    const offersType = this.#offerModel.getOfferByType(type);
+    const updatedOffers = point.offers.map((offer) => offersType.find((of) => of.id === offer));
+    const updatedDestination = this.#destinationModel.getDestinationById(point.destination);
+    const updatedPoint = {
+      ...point,
+      offers: updatedOffers,
+      destination: updatedDestination,
+    };
+
+    const pointComponent = new PointItemView({
+      point: updatedPoint,
+      onOpenClick: () => {
+        replaceDefaultPointToEdit();
+        document.addEventListener('keydown', escKeyDownHandler);
+      }
+    });
+
+    const pointEditComponent = new PointFormView({
+      isEditMode: true,
+      point: updatedPoint,
+      destinations: this.#destinations,
+      offers: this.#offers,
+      onCloseClick: () => {
+        replaceEditPointToDefault();
+        document.removeEventListener('keydown', escKeyDownHandler);
+      },
+      onSaveClick: () => {
+        replaceEditPointToDefault();
+      }
+    });
+
+    render(pointComponent, this.#listComponent.element);
+
+    function replaceDefaultPointToEdit() {
+      replace(pointEditComponent, pointComponent);
+    }
+
+    function replaceEditPointToDefault() {
+      replace(pointComponent, pointEditComponent);
+    }
   }
 }

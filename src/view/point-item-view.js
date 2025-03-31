@@ -1,5 +1,5 @@
-import { createElement } from '../render';
 import {formatDateForDatetime, formatDateToMonthDay, formatDateToTime, formatDurationDifference} from '../utils';
+import AbstractView from '../framework/view/abstract-view';
 
 function createOffersList(offers) {
   if (offers.length === 0) {
@@ -18,7 +18,7 @@ function createOffersList(offers) {
 }
 
 
-function createPointItemTemplate({type, basePrice, dateFrom, dateTo, isFavorite, offers}) {
+function createPointItemTemplate({type, destination, basePrice, dateFrom, dateTo, isFavorite, offers}) {
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
   return (
     `
@@ -28,7 +28,7 @@ function createPointItemTemplate({type, basePrice, dateFrom, dateTo, isFavorite,
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
                 </div>
-                <h3 class="event__title">${type} Amsterdam</h3>
+                <h3 class="event__title">${type} ${destination.name}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
                     <time class="event__start-time" datetime="${formatDateForDatetime(dateFrom)}">${formatDateToTime(dateFrom)}</time>
@@ -57,24 +57,25 @@ function createPointItemTemplate({type, basePrice, dateFrom, dateTo, isFavorite,
   );
 }
 
-export default class PointItemView {
-  constructor({point}) {
-    this.point = point;
+export default class PointItemView extends AbstractView {
+  #point = null;
+  #handlerOpenClick = null;
+
+  constructor({point, onOpenClick}) {
+    super();
+
+    this.#handlerOpenClick = onOpenClick;
+    this.#point = point;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#openClickHandler);
   }
 
-  getTemplate() {
-    return createPointItemTemplate(this.point);
+  get template() {
+    return createPointItemTemplate(this.#point);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #openClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handlerOpenClick();
+  };
 }

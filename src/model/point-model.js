@@ -1,10 +1,14 @@
-export default class PointModel {
+import AbstractModel from './abstract-model';
+
+export default class PointModel extends AbstractModel{
+  #points = null;
+
   constructor(service) {
-    this.service = service;
-    this.points = this.service.getPoints();
+    super(service);
+    this.#points = this._service.points;
   }
 
-  getPoints() {
-    return this.points;
+  get points() {
+    return this.#points;
   }
 }

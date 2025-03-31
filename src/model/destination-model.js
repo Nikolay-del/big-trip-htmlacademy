@@ -1,14 +1,18 @@
-export default class DestinationModel {
+import AbstractModel from './abstract-model';
+
+export default class DestinationModel extends AbstractModel {
+  #destinations = null;
+
   constructor(service) {
-    this.service = service;
-    this.destinations = this.service.getDestinations();
+    super(service);
+    this.#destinations = this._service.destinations;
   }
 
-  getAllDestinations() {
-    return this.destinations;
+  get destinations() {
+    return this.#destinations;
   }
 
   getDestinationById(id) {
-    return this.destinations.find((d) => d.id === id);
+    return this.#destinations.find((d) => d.id === id);
   }
 }

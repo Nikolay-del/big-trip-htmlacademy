@@ -1,4 +1,4 @@
-import { render, RenderPosition } from './render';
+import { render, RenderPosition } from './framework/render';
 import NewEventButtonView from './view/new-event-button-view';
 import FilterView from './view/filter-view';
 import EventsPresenter from './presenter/events-presenter';
