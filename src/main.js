@@ -1,12 +1,12 @@
-import { render, RenderPosition } from './framework/render';
+import {render} from './framework/render';
 import NewEventButtonView from './view/new-event-button-view';
 import FilterView from './view/filter-view';
 import EventsPresenter from './presenter/events-presenter';
-import TripInfoView from './view/trip-info-view';
 import PointModel from './model/point-model';
 import MockService from './service/mock-service';
 import DestinationModel from './model/destination-model';
 import OfferModel from './model/offer-model';
+import TripPresenter from './presenter/trip-presenter';
 
 const siteHeaderElement = document.querySelector('.page-header');
 const siteTripMainElement = siteHeaderElement.querySelector('.trip-main');
@@ -24,9 +24,15 @@ const eventsPresenter = new EventsPresenter({
   offerModel
 });
 
-render(new TripInfoView(), siteTripMainElement, RenderPosition.AFTERBEGIN);
+const tripPresenter = new TripPresenter({
+  pointModel,
+  destinationModel,
+  tripMainElement: siteTripMainElement
+});
+
 render(new FilterView(), siteTripControlsElement);
 render(new NewEventButtonView(), siteTripMainElement);
 
+tripPresenter.init();
 eventsPresenter.init();
 

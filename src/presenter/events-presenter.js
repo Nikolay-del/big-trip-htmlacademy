@@ -4,10 +4,12 @@ import SortView from '../view/sort-view';
 import EventsView from '../view/events-view';
 import PointItemView from '../view/point-item-view';
 import PointFormView from '../view/point-form-view';
+import NoPointView from '../view/no-point-view';
 
 export default class EventsPresenter {
   #eventsComponent = new EventsView();
   #listComponent = new ListView();
+  #currentFilter = 'Everything';
 
   #eventsContainer = null;
   #pointModel = null;
@@ -31,9 +33,17 @@ export default class EventsPresenter {
     this.#destinations = [...this.#destinationModel.destinations];
     this.#offers = [...this.#offerModel.offers];
 
+    this.#renderBoard();
+  }
+
+  #renderBoard() {
     render(this.#eventsComponent, this.#eventsContainer);
     render(new SortView(), this.#eventsComponent.element);
     render(this.#listComponent, this.#eventsComponent.element);
+
+    if (!this.#events.length) {
+      render(new NoPointView({typeFilter: this.#currentFilter}), this.#listComponent.element);
+    }
 
     this.#events.forEach((value) => {
       this.#renderPoint(value);
